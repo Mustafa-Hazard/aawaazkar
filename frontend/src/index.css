@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+  --primary: #1B4332;
+  --accent: #40916C;
+  --light: #D8F3DC;
+  --danger: #E63946;
+  --warning: #F4A261;
+  --muted: #6B7280;
+  --bg: #F0FDF4;
+}
 
 * {
   box-sizing: border-box;
@@ -12,8 +18,8 @@
 
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background: #F0FDF4;
-  color: #1B4332;
+  background: var(--bg);
+  color: var(--primary);
 }
 
 .card {
@@ -24,7 +30,7 @@ body {
 }
 
 .btn-primary {
-  background: #1B4332;
+  background: var(--primary);
   color: white;
   padding: 12px 24px;
   border-radius: 12px;
@@ -35,23 +41,23 @@ body {
 }
 
 .btn-primary:hover {
-  background: #40916C;
+  background: var(--accent);
   transform: translateY(-1px);
 }
 
 .btn-outline {
   background: transparent;
-  color: #1B4332;
+  color: var(--primary);
   padding: 10px 20px;
   border-radius: 12px;
   font-weight: 600;
-  border: 2px solid #1B4332;
+  border: 2px solid var(--primary);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .btn-outline:hover {
-  background: #1B4332;
+  background: var(--primary);
   color: white;
 }
 
@@ -101,6 +107,6 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #40916C;
+  border-color: var(--accent);
   background: white;
 }

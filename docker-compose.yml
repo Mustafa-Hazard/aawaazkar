@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: aawaazkar_db
+    restart: always
+    environment:
+      POSTGRES_USER: aawaazkar
+      POSTGRES_PASSWORD: aawaazkar123
+      POSTGRES_DB: aawaazkar
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: aawaazkar_backend
+    restart: always
+    ports:
+      - '4000:4000'
+    environment:
+      DATABASE_URL: postgresql://aawaazkar:aawaazkar123@db:5432/aawaazkar
+      JWT_SECRET: supersecretkey
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: aawaazkar_frontend
+    restart: always
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
