@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useState, useEffect } from 'react'
 import { getReports, updateStatus, login as adminLogin } from '../api'
 
 const initialIssues = [
@@ -15,11 +14,6 @@ const initialIssues = [
 
 const priorityColor = { Critical: 'badge-red', High: 'badge-yellow', Medium: 'badge-gray', Low: 'badge-gray' }
 const statusColor = { Pending: 'badge-red', 'In Progress': 'badge-yellow', Resolved: 'badge-green' }
-useEffect(() => {
-    if (loggedIn) {
-        getReports().then(res => setIssues(res.data)).catch(() => { })
-    }
-}, [loggedIn])
 
 export default function AdminPanel({ lang }) {
     const ur = lang === 'ur'
@@ -39,14 +33,10 @@ export default function AdminPanel({ lang }) {
         }
     }
 
-    // change all updateStatus( calls in JSX to handleStatusUpdate(.
     async function handleStatusUpdate(id, status) {
-        try {
-            await updateStatus(id, status)
-            setIssues(issues.map(i => i.id === id ? { ...i, status } : i))
-        } catch {
-            alert('Failed to update status')
-        }
+        await updateStatus(id, status)
+        const res = await getReports()
+        setIssues(res.data)
     }
 
     const filtered = filter === 'All' ? issues : issues.filter(i => i.status === filter)

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { createReport } from '../api'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 
 const categories = [
     { value: 'road', label: 'Road / Pothole', labelUr: 'سڑک / گڑھا' },
@@ -75,6 +77,7 @@ export default function ReportForm({ lang }) {
                 lng: location?.lng || null,
             })
             setSubmitted(true)
+            toast.success('Report submitted successfully!')
         } catch (err) {
             console.error(err)
         }

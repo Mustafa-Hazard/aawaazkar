@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import ReportForm from './pages/ReportForm'
@@ -9,6 +9,11 @@ import MapView from './pages/MapView'
 export default function App() {
   const [page, setPage] = useState('home')
   const [lang, setLang] = useState('en')
+
+  useEffect(() => {
+    const titles = { home: 'AawaazKar', report: 'Report Issue', map: 'Live Map', dashboard: 'Dashboard', admin: 'Admin' }
+    document.title = `${titles[page]} — AawaazKar`
+  }, [page])
 
   const labels = {
     en: { home: 'Home', report: 'Report Issue', map: 'Live Map', dashboard: 'Dashboard', admin: 'Admin' },
