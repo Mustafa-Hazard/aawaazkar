@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { getReports, updateStatus, login as adminLogin } from '../api'
 
 const initialIssues = [
     { id: 1, title: 'Pothole on Shahrae Faisal', area: 'Gulshan', type: 'Road', priority: 'High', votes: 47, status: 'In Progress', score: 65, date: '2026-06-05' },
@@ -13,6 +15,11 @@ const initialIssues = [
 
 const priorityColor = { Critical: 'badge-red', High: 'badge-yellow', Medium: 'badge-gray', Low: 'badge-gray' }
 const statusColor = { Pending: 'badge-red', 'In Progress': 'badge-yellow', Resolved: 'badge-green' }
+useEffect(() => {
+    if (loggedIn) {
+        getReports().then(res => setIssues(res.data)).catch(() => { })
+    }
+}, [loggedIn])
 
 export default function AdminPanel({ lang }) {
     const ur = lang === 'ur'
@@ -23,15 +30,23 @@ export default function AdminPanel({ lang }) {
     const [creds, setCreds] = useState({ user: '', pass: '' })
     const [error, setError] = useState('')
 
-    function login() {
-        if (creds.user === 'admin' && creds.pass === 'aawaazkar') {
+    async function login() {
+        try {
+            await adminLogin(creds.user, creds.pass)
             setLoggedIn(true); setError('')
-        } else setError('Invalid credentials')
+        } catch {
+            setError('Invalid credentials')
+        }
     }
 
-    function updateStatus(id, status) {
-        setIssues(issues.map(i => i.id === id ? { ...i, status } : i))
-        setSelected(null)
+    // change all updateStatus( calls in JSX to handleStatusUpdate(.
+    async function handleStatusUpdate(id, status) {
+        try {
+            await updateStatus(id, status)
+            setIssues(issues.map(i => i.id === id ? { ...i, status } : i))
+        } catch {
+            alert('Failed to update status')
+        }
     }
 
     const filtered = filter === 'All' ? issues : issues.filter(i => i.status === filter)

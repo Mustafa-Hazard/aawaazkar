@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createReport } from '../api'
 
 const categories = [
     { value: 'road', label: 'Road / Pothole', labelUr: 'سڑک / گڑھا' },
@@ -62,9 +63,21 @@ export default function ReportForm({ lang }) {
         )
     }
 
-    function handleSubmit() {
+    async function handleSubmit() {
         if (!form.title || !form.category || !form.area) return
-        setSubmitted(true)
+        try {
+            await createReport({
+                title: form.title,
+                category: form.category,
+                area: form.area,
+                description: form.description,
+                lat: location?.lat || null,
+                lng: location?.lng || null,
+            })
+            setSubmitted(true)
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     if (submitted) return (
