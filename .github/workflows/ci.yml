@@ -1,0 +1,167 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (lint, test, build)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: aawaazkar
+          POSTGRES_PASSWORD: aawaazkar123
+          POSTGRES_DB: aawaazkar
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5433
+          DATABASE_USER: aawaazkar
+          DATABASE_PASSWORD: aawaazkar123
+          DATABASE_NAME: aawaazkar
+          JWT_SECRET: ci-test-secret-please-replace-this-in-real-env-1234567890
+          ADMIN_USERNAME: admin
+          ADMIN_PASSWORD_HASH: $2b$10$sWePyk9Euq7cRPKgvbVev.NWPZHJWtZlvKoP1wGQCPd1DWuZInVvG
+
+      - name: Build
+        run: npm run build
+
+  frontend:
+    name: Frontend (lint, build)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+  docker-build:
+    name: Docker build check
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: false
+          load: true
+          tags: aawaazkar-backend:ci
+
+      - name: Build frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: false
+          load: true
+          tags: aawaazkar-frontend:ci
+
+      - name: Smoke test backend container
+        run: |
+          docker run -d --name backend-smoke \
+            -e DATABASE_HOST=localhost \
+            -e DATABASE_PORT=5433 \
+            -e DATABASE_USER=aawaazkar \
+            -e DATABASE_PASSWORD=aawaazkar123 \
+            -e DATABASE_NAME=aawaazkar \
+            -e JWT_SECRET=ci-test-secret-please-replace-this-in-real-env-1234567890 \
+            -e ADMIN_USERNAME=admin \
+            -e ADMIN_PASSWORD_HASH='$2b$10$sWePyk9Euq7cRPKgvbVev.NWPZHJWtZlvKoP1wGQCPd1DWuZInVvG' \
+            -p 4000:4000 \
+            aawaazkar-backend:ci
+
+          echo "Waiting for backend container to report healthy startup..."
+          sleep 8
+
+          if [ "$(docker inspect -f '{{.State.Running}}' backend-smoke)" != "true" ]; then
+            echo "Backend container exited unexpectedly. Logs:"
+            docker logs backend-smoke
+            exit 1
+          fi
+
+          echo "Backend container is running."
+          docker logs backend-smoke
+
+      - name: Smoke test frontend container
+        run: |
+          docker run -d --name frontend-smoke -p 3000:3000 aawaazkar-frontend:ci
+
+          echo "Waiting for frontend container to start..."
+          sleep 8
+
+          if [ "$(docker inspect -f '{{.State.Running}}' frontend-smoke)" != "true" ]; then
+            echo "Frontend container exited unexpectedly. Logs:"
+            docker logs frontend-smoke
+            exit 1
+          fi
+
+          echo "Frontend container is running."
+          docker logs frontend-smoke
+
+      - name: Clean up containers
+        if: always()
+        run: |
+          docker rm -f backend-smoke || true
+          docker rm -f frontend-smoke || true

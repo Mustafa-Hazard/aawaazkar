@@ -17,14 +17,33 @@ export default function Dashboard({ lang }) {
             const [r, s] = await Promise.all([getReports(), getStats()])
             setIssues(r.data)
             setStats(s.data)
-        } catch {
-            console.error('API not available, using mock data')
+        } catch (err) {
+            console.error('Failed to load dashboard data:', err)
         } finally {
             setLoading(false)
         }
     }
 
-    useEffect(() => { load() }, [])
+    useEffect(() => {
+        let cancelled = false
+
+        async function run() {
+            try {
+                const [r, s] = await Promise.all([getReports(), getStats()])
+                if (!cancelled) {
+                    setIssues(r.data)
+                    setStats(s.data)
+                }
+            } catch (err) {
+                if (!cancelled) console.error('Failed to load dashboard data:', err)
+            } finally {
+                if (!cancelled) setLoading(false)
+            }
+        }
+
+        run()
+        return () => { cancelled = true }
+    }, [])
 
     async function handleUpvote(id) {
         await upvoteReport(id)
@@ -128,7 +147,7 @@ export default function Dashboard({ lang }) {
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
                             <thead>
                                 <tr style={{ background: '#F9FAFB' }}>
-                                    {['Issue', 'Area', 'Type', 'AI Score', 'Votes', 'Priority', 'Status', ''].map(h => (
+                                    {['Issue', 'Area', 'Type', 'Score', 'Votes', 'Priority', 'Status', ''].map(h => (
                                         <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--muted)', fontSize: 12, textTransform: 'uppercase' }}>{h}</th>
                                     ))}
                                 </tr>

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { createReport } from '../api'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 
 const categories = [
@@ -38,21 +37,13 @@ function getPriorityLabel(score) {
 
 export default function ReportForm({ lang }) {
     const ur = lang === 'ur'
-    const [form, setForm] = useState({ title: '', category: '', area: '', description: '', photo: null })
+    const [form, setForm] = useState({ title: '', category: '', area: '', description: '' })
     const [submitted, setSubmitted] = useState(false)
     const [locating, setLocating] = useState(false)
     const [location, setLocation] = useState(null)
-    const [preview, setPreview] = useState(null)
 
     const score = form.category ? getPriorityScore(form.category, form.description) : null
     const priority = score !== null ? getPriorityLabel(score) : null
-
-    function handlePhoto(e) {
-        const file = e.target.files[0]
-        if (!file) return
-        setForm({ ...form, photo: file })
-        setPreview(URL.createObjectURL(file))
-    }
 
     function getLocation() {
         setLocating(true)
@@ -80,6 +71,7 @@ export default function ReportForm({ lang }) {
             toast.success('Report submitted successfully!')
         } catch (err) {
             console.error(err)
+            toast.error('Failed to submit report. Please try again.')
         }
     }
 
@@ -98,7 +90,7 @@ export default function ReportForm({ lang }) {
                 </span>
             )}
             <br />
-            <button className="btn-primary" style={{ marginTop: 24 }} onClick={() => { setSubmitted(false); setForm({ title: '', category: '', area: '', description: '', photo: null }); setPreview(null); setLocation(null) }}>
+            <button className="btn-primary" style={{ marginTop: 24 }} onClick={() => { setSubmitted(false); setForm({ title: '', category: '', area: '', description: '' }); setLocation(null) }}>
                 {ur ? 'نئی رپورٹ' : 'Submit Another'}
             </button>
         </div>
@@ -153,12 +145,12 @@ export default function ReportForm({ lang }) {
                             style={{ resize: 'vertical' }} />
                     </div>
 
-                    {/* AI Priority Score */}
+                    {/* Priority Score Preview */}
                     {priority && (
                         <div style={{ background: priority.bg, border: `1.5px solid ${priority.color}`, borderRadius: 12, padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <div>
                                 <div style={{ fontSize: 13, fontWeight: 600, color: priority.color }}>
-                                    {ur ? 'AI ترجیحی اسکور' : 'AI Priority Score'}
+                                    {ur ? 'ترجیحی اسکور' : 'Priority Score'}
                                 </div>
                                 <div style={{ fontSize: 12, color: priority.color, opacity: 0.8 }}>
                                     {ur ? 'خودکار حساب' : 'Auto-calculated based on issue type'}
@@ -182,15 +174,6 @@ export default function ReportForm({ lang }) {
                             </button>
                             {location && <span style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 500 }}>✅ {location.lat}, {location.lng}</span>}
                         </div>
-                    </div>
-
-                    {/* Photo */}
-                    <div>
-                        <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>
-                            {ur ? 'تصویر' : 'Photo (optional)'}
-                        </label>
-                        <input type="file" accept="image/*" onChange={handlePhoto} style={{ padding: '8px 12px' }} />
-                        {preview && <img src={preview} alt="preview" style={{ marginTop: 10, width: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 10 }} />}
                     </div>
 
                     <button className="btn-primary" style={{ marginTop: 8, fontSize: 16, padding: '14px' }} onClick={handleSubmit}>

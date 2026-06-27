@@ -1,14 +1,29 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
-const ADMIN_USER = { username: 'admin', password: 'aawaazkar' };
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
     constructor(private jwtService: JwtService) { }
 
+    onModuleInit() {
+        if (!process.env.ADMIN_USERNAME || !process.env.ADMIN_PASSWORD_HASH) {
+            throw new Error(
+                'Missing ADMIN_USERNAME or ADMIN_PASSWORD_HASH in .env — refusing to start without admin credentials configured.',
+            );
+        }
+    }
+
     async login(username: string, password: string) {
-        if (username !== ADMIN_USER.username || password !== ADMIN_USER.password) {
+        const validUsername = process.env.ADMIN_USERNAME;
+        const validPasswordHash = process.env.ADMIN_PASSWORD_HASH as string;
+
+        if (username !== validUsername) {
+            throw new UnauthorizedException('Invalid credentials');
+        }
+
+        const passwordMatches = await bcrypt.compare(password, validPasswordHash);
+        if (!passwordMatches) {
             throw new UnauthorizedException('Invalid credentials');
         }
 

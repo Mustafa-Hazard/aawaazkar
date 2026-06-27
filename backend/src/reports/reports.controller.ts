@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Patch, Param, Body, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { Report } from './report.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('reports')
 export class ReportsController {
@@ -26,6 +27,7 @@ export class ReportsController {
         return this.reportsService.findOne(id);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Patch(':id/status')
     updateStatus(
         @Param('id', ParseIntPipe) id: number,
