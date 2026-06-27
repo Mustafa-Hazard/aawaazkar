@@ -10,4 +10,4 @@ import { AuthModule } from '../auth/auth.module';
   controllers: [ReportsController],
   providers: [ReportsService],
 })
-export class ReportsModule { }
+export class ReportsModule {}

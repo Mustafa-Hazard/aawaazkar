@@ -18,4 +18,8 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`AawaazKar backend running on port ${port}`);
 }
-bootstrap();
+
+bootstrap().catch((err) => {
+  console.error('Failed to start AawaazKar backend:', err);
+  process.exit(1);
+});
