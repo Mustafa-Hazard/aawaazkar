@@ -1,81 +1,176 @@
+Here is your updated, fully polished `README.md`.
+
+It has been stripped of the "AI" exaggerations to make it 100% accurate and defensible for your hackathon presentation, and it includes clear, step-by-step instructions on how to set up and run the entire project (including the backend `.env` configuration and the missing `react-router-dom` dependency you fixed).
+
+---
+
+```markdown
 # AawaazKar — آواز کر
-### Karachi Civic Issue Reporting Platform
-> ZABEFEST Hackathon 2026 — Building a Better World for the Future
+### Karachi Civic Issue Reporting & Smart Prioritization Platform
+*ZABEFEST Hackathon 2026 — Building a Better World for the Future*
 
-## Problem
-Karachi citizens have no efficient way to report, track, or verify civic issues like potholes, garbage overflow, water shortages, and broken streetlights.
+---
 
-## Solution
-AawaazKar is a real-time civic reporting platform where citizens report issues, an AI engine prioritizes them by urgency, and authorities resolve them transparently.
+## 🚀 Problem & Solution
 
-## Tech Stack
-- **Frontend:** React + Vite + Tailwind CSS v4
-- **Backend:** NestJS + TypeORM
-- **Database:** PostgreSQL (Docker)
-- **Containerization:** Docker + docker-compose
+### The Problem
+Karachi citizens have no efficient, transparent way to report, track, or verify localized civic infrastructure breakdowns—such as severe potholes, garbage overflows, water shortages, or broken streetlights. Critical issues are often lost in paperwork or delayed by lack of structural urgency analytics.
 
-## Features
-- Citizen issue reporting with photo + GPS
-- AI Priority Scoring Engine (auto-calculates urgency 0-100)
-- Live heatmap of issues across Karachi (Leaflet.js)
-- Public transparency dashboard with real-time stats
-- Crowdsourced verification (upvote system)
-- Admin panel with JWT authentication
-- Urdu language support
-- Offline-ready architecture
+### The Solution
+**AawaazKar** is a real-time civic reporting platform where citizens pin and submit issues directly. The platform utilizes a **Weighted Urgency Scoring Algorithm** to instantly categorize reports by priority, allowing municipal authorities to review, update, and resolve infrastructure issues transparently.
 
-## Hackathon Components Covered
-1. Citizen issue reporting system
-2. Geo-tagging and location intelligence
-3. Smart prioritization (AI scoring)
-4. Public transparency dashboard
-5. Crowdsourced verification
-6. Data analytics and heatmap visualization
-7. Admin management workflow
+---
 
-## Sustainability
-- Environmental: Garbage, flood, air quality tracking
-- Social: Citizen empowerment, public safety
-- Economic: Reduces city repair costs via early detection
+## 🛠️ Tech Stack
 
-## Quick Start
+*   **Frontend:** React + Vite + Tailwind CSS
+*   **Backend:** NestJS + TypeORM (with Passport JWT Auth)
+*   **Database:** PostgreSQL (Dockerized)
+*   **Containerization:** Docker + Docker Compose
+
+---
+
+## ✨ Features Built
+
+*   **Citizen Issue Reporting:** Simplified submission form with category selection, description, and location tagging.
+*   **Smart Priority Scoring Engine:** A rules-based urgency calculator (0-100) that weights category severity against specific high-urgency keywords in the citizen's description.
+*   **Crowdsourced Verification:** An upvote system where community verification progressively bumps up the issue score and urgency status (+2 points per upvote).
+*   **Public Transparency Dashboard:** Real-time breakdown charts counting Total, Pending, In Progress, and Resolved complaints.
+*   **Secure Admin Panel:** Protected queue view where authorized personnel use JWT authentication to safely change issue lifecycle states (`Start` / `Resolve`).
+*   **Urdu Language Support:** Bilingual interface toggle supporting local language usability.
+
+---
+
+## 🏃‍♂️ How to Run the Project
+
+Follow these steps to spin up the database, backend, and frontend environments locally.
 
 ### Prerequisites
-- Node.js 20+
-- Docker Desktop
+*   [Node.js](https://nodejs.org/) (v20+ recommended)
+*   [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
-### Run with Docker
-```bash
-docker-compose up -d
+---
+
+### Step 1: Start the Database (Docker)
+The database runs isolated in a Docker container mapped to host port `5433` to prevent conflicts with local database engines.
+
+1. Open a terminal at the root directory of the project.
+2. Run the following command to start the database in detached mode:
+   ```bash
+   docker compose up -d
+
 ```
 
-### Run Backend
+3. *(Optional)* Verify that the container is healthy:
+```bash
+docker ps
+
+```
+
+
+
+---
+
+### Step 2: Configure & Run the Backend
+
+1. Navigate into the backend directory:
 ```bash
 cd backend
-npm install
-npm run start:dev
+
 ```
 
-### Run Frontend
+
+2. Create your local environment file by copying the template:
+```bash
+cp .env.example .env
+
+```
+
+
+3. Open the newly created `backend/.env` file and verify or update the variables to match your configuration. For example:
+```env
+DATABASE_HOST=localhost
+DATABASE_PORT=5433
+DATABASE_USER=aawaazkar
+DATABASE_PASSWORD=aawaazkar123
+DATABASE_NAME=aawaazkar
+JWT_SECRET=superSecretHackathonKey2026
+
+```
+
+
+4. Install the NestJS and Passport dependencies:
+```bash
+npm install
+
+```
+
+
+5. Spin up the NestJS server in development mode:
+```bash
+npm run start:dev
+
+```
+
+
+The backend API will be live at `http://localhost:3000/api`.
+
+---
+
+### Step 3: Configure & Run the Frontend
+
+1. Open a new terminal window and navigate into the frontend directory:
 ```bash
 cd frontend
-npm install
-npm run dev
+
 ```
 
-### Admin Login
-- Username: `admin`
-- Password: `aawaazkar`
 
-## API Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/reports | Get all reports |
-| POST | /api/reports | Submit new report |
-| PATCH | /api/reports/:id/status | Update status |
-| PATCH | /api/reports/:id/upvote | Upvote report |
-| GET | /api/reports/stats | Get statistics |
-| POST | /api/auth/login | Admin login |
+2. Install the React application dependencies (including routing and utility components):
+```bash
+npm install
 
-## Team
-SZABIST Karachi — ZABEFEST Hackathon 2026
+```
+
+
+3. Run the Vite development server:
+```bash
+npm run dev
+
+```
+
+
+4. Open your browser and navigate to the local address displayed in your terminal (typically `http://localhost:5173/`).
+
+---
+
+## 🔐 Credentials & Demo Testing
+
+### Admin Access
+
+To access the protected management features, use the default administrator credentials inside the app or when making authenticated API requests:
+
+* **Username:** `admin`
+* **Password:** `aawaazkar`
+
+### Testing Status Changes via cURL
+
+If you want to manually execute a status mutation bypass test on a report via your terminal, send the `access_token` inside the authorization header:
+
+```bash
+curl -X PATCH http://localhost:3000/api/reports/1/status \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE" \
+  -d '{"status":"Resolved"}'
+
+```
+
+---
+
+## 👥 Team
+
+* **SZABIST Karachi** — ZABEFEST Hackathon 2026
+
+```
+
+```
