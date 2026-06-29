@@ -1,10 +1,3 @@
-Here is your updated, fully polished `README.md`.
-
-It has been stripped of the "AI" exaggerations to make it 100% accurate and defensible for your hackathon presentation, and it includes clear, step-by-step instructions on how to set up and run the entire project (including the backend `.env` configuration and the missing `react-router-dom` dependency you fixed).
-
----
-
-```markdown
 # AawaazKar — آواز کر
 ### Karachi Civic Issue Reporting & Smart Prioritization Platform
 *ZABEFEST Hackathon 2026 — Building a Better World for the Future*
