@@ -160,10 +160,3 @@ curl -X PATCH http://localhost:3000/api/reports/1/status \
 
 ---
 
-## 👥 Team
-
-* **SZABIST Karachi** — ZABEFEST Hackathon 2026
-
-```
-
-```
