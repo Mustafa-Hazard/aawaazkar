@@ -2,12 +2,11 @@
 
 Karachi civic issue reporting web app with location tagging, priority scoring, and bilingual support.
 
-<!-- add screenshot here -->
+![AawaazKar Preview](docs/aawaazkar.png)
 
 ## About
 AawaazKar is a web application built for the ZABEFEST Hackathon 2026 to help residents in Karachi report municipal issues like water shortages, broken streetlights, potholes, and garbage accumulation. The app calculates an urgency score for each report using issue category weighting and keyword checks in the report text. Community members can upvote existing reports to increase their urgency score, helping municipal staff identify urgent infrastructure problems. The user interface includes an Urdu language toggle to improve accessibility for local citizens.
 
-<!-- add placement -->
 
 ## Features
 - **Citizen Report Submission:** Citizens submit reports with a title, category, description, and interactive map location using Leaflet.
