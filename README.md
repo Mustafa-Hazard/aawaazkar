@@ -1,162 +1,97 @@
-# AawaazKar — آواز کر
-### Karachi Civic Issue Reporting & Smart Prioritization Platform
-*ZABEFEST Hackathon 2026 — Building a Better World for the Future*
+# AawaazKar
 
----
+Karachi civic issue reporting web app with location tagging, priority scoring, and bilingual support.
 
-## 🚀 Problem & Solution
+<!-- add screenshot here -->
 
-### The Problem
-Karachi citizens have no efficient, transparent way to report, track, or verify localized civic infrastructure breakdowns—such as severe potholes, garbage overflows, water shortages, or broken streetlights. Critical issues are often lost in paperwork or delayed by lack of structural urgency analytics.
+## About
+AawaazKar is a web application built for the ZABEFEST Hackathon 2026 to help residents in Karachi report municipal issues like water shortages, broken streetlights, potholes, and garbage accumulation. The app calculates an urgency score for each report using issue category weighting and keyword checks in the report text. Community members can upvote existing reports to increase their urgency score, helping municipal staff identify urgent infrastructure problems. The user interface includes an Urdu language toggle to improve accessibility for local citizens.
 
-### The Solution
-**AawaazKar** is a real-time civic reporting platform where citizens pin and submit issues directly. The platform utilizes a **Weighted Urgency Scoring Algorithm** to instantly categorize reports by priority, allowing municipal authorities to review, update, and resolve infrastructure issues transparently.
+<!-- add placement -->
 
----
+## Features
+- **Citizen Report Submission:** Citizens submit reports with a title, category, description, and interactive map location using Leaflet.
+- **Rule-Based Urgency Scoring:** Backend calculates a 0–100 urgency score using base category weights (safety: 40, water/flood: 35, road: 25, sanitation: 20, other: 15) and adds 10 points for each matching urgent keyword (`emergency`, `urgent`, `critical`, `dangerous`, `broken`, `no water`, `flood`).
+- **Priority Classification:** Reports automatically classify into Critical (>= 70), High (>= 45), Medium (>= 25), or Low (< 25).
+- **Crowdsourced Verification:** Community upvotes increase the report urgency score by +2 points per vote (capped at 100) and recalculate priority level.
+- **Public Dashboard:** View active complaints categorized into Pending, In Progress, and Resolved status cards, with counters for total and critical reports.
+- **Admin Management Panel:** Protected JWT routes allow municipal staff to review reports and transition status between Pending, In Progress, and Resolved.
+- **Bilingual Interface:** English and Urdu language toggle built with i18next.
 
-## 🛠️ Tech Stack
+## Tech Stack
+*Stack verified from `backend/package.json` and `frontend/package.json`. GitHub displays JavaScript for the repository because the frontend components and configuration files are written in JavaScript/JSX, while the backend is written in TypeScript.*
 
-*   **Frontend:** React + Vite + Tailwind CSS
-*   **Backend:** NestJS + TypeORM (with Passport JWT Auth)
-*   **Database:** PostgreSQL (Dockerized)
-*   **Containerization:** Docker + Docker Compose
+| Layer | Technologies |
+|---|---|
+| **Frontend** | React 19, JavaScript (JSX), Vite 8, Tailwind CSS 4, React Router 7, Leaflet, React-Leaflet, Axios, i18next |
+| **Backend** | NestJS 11, TypeScript, TypeORM 0.3, PostgreSQL (`pg` 8.21), Passport, Passport JWT, Bcrypt |
+| **Database & Tools** | PostgreSQL 16 (Docker Compose), Docker |
 
----
-
-## ✨ Features Built
-
-*   **Citizen Issue Reporting:** Simplified submission form with category selection, description, and location tagging.
-*   **Smart Priority Scoring Engine:** A rules-based urgency calculator (0-100) that weights category severity against specific high-urgency keywords in the citizen's description.
-*   **Crowdsourced Verification:** An upvote system where community verification progressively bumps up the issue score and urgency status (+2 points per upvote).
-*   **Public Transparency Dashboard:** Real-time breakdown charts counting Total, Pending, In Progress, and Resolved complaints.
-*   **Secure Admin Panel:** Protected queue view where authorized personnel use JWT authentication to safely change issue lifecycle states (`Start` / `Resolve`).
-*   **Urdu Language Support:** Bilingual interface toggle supporting local language usability.
-
----
-
-## 🏃‍♂️ How to Run the Project
-
-Follow these steps to spin up the database, backend, and frontend environments locally.
+## Getting Started
 
 ### Prerequisites
-*   [Node.js](https://nodejs.org/) (v20+ recommended)
-*   [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Node.js (v20 or higher)
+- Docker and Docker Compose
 
----
-
-### Step 1: Start the Database (Docker)
-The database runs isolated in a Docker container mapped to host port `5433` to prevent conflicts with local database engines.
-
-1. Open a terminal at the root directory of the project.
-2. Run the following command to start the database in detached mode:
-   ```bash
-   docker compose up -d
-
-```
-
-3. *(Optional)* Verify that the container is healthy:
+### 1. Start Database
+From the project root:
 ```bash
-docker ps
-
+docker compose up -d
 ```
 
-
-
----
-
-### Step 2: Configure & Run the Backend
-
-1. Navigate into the backend directory:
+### 2. Start Backend API
 ```bash
 cd backend
-
-```
-
-
-2. Create your local environment file by copying the template:
-```bash
 cp .env.example .env
-
-```
-
-
-3. Open the newly created `backend/.env` file and verify or update the variables to match your configuration. For example:
-```env
-DATABASE_HOST=localhost
-DATABASE_PORT=5433
-DATABASE_USER=aawaazkar
-DATABASE_PASSWORD=aawaazkar123
-DATABASE_NAME=aawaazkar
-JWT_SECRET=superSecretHackathonKey2026
-
-```
-
-
-4. Install the NestJS and Passport dependencies:
-```bash
 npm install
-
-```
-
-
-5. Spin up the NestJS server in development mode:
-```bash
 npm run start:dev
-
 ```
+The NestJS API runs on `http://localhost:3000/api`.
 
-
-The backend API will be live at `http://localhost:3000/api`.
-
----
-
-### Step 3: Configure & Run the Frontend
-
-1. Open a new terminal window and navigate into the frontend directory:
+### 3. Start Frontend App
+In a new terminal:
 ```bash
 cd frontend
-
-```
-
-
-2. Install the React application dependencies (including routing and utility components):
-```bash
 npm install
-
-```
-
-
-3. Run the Vite development server:
-```bash
 npm run dev
+```
+The Vite frontend runs on `http://localhost:5173`.
 
+### Environment Variables
+
+| Variable | Description | Example Placeholder |
+|---|---|---|
+| `DATABASE_HOST` | PostgreSQL host | `localhost` |
+| `DATABASE_PORT` | PostgreSQL port mapped by Docker | `5433` |
+| `DATABASE_USER` | PostgreSQL user | `aawaazkar` |
+| `DATABASE_PASSWORD` | PostgreSQL password | `your_db_password` |
+| `DATABASE_NAME` | PostgreSQL database name | `aawaazkar` |
+| `JWT_SECRET` | Secret key for signing admin tokens | `your_jwt_secret` |
+| `PORT` | Backend application port | `3000` |
+
+## Project Structure
+```text
+aawaazkar/
+├── backend/
+│   ├── src/
+│   │   ├── auth/          # JWT strategy, auth guards, admin service
+│   │   ├── reports/       # Report entity, scoring service, controller
+│   │   └── app.module.ts  # Root application module
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/    # Navbar, ReportCard, MapPicker
+│   │   ├── pages/         # Home, AdminLogin, SubmitReport
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── package.json
+└── docker-compose.yml     # PostgreSQL service definition
 ```
 
+## What I Learned & What I Would Improve
+- Built end-to-end integration between NestJS and React with JWT authentication and TypeORM entity relations.
+- Implemented geographic coordinate selection in React using Leaflet and stored coordinates in PostgreSQL.
+- Future improvements: add image file upload storage (e.g. S3/Cloudinary) for photo proof, add automated test coverage for backend services, and optimize frontend bundle size.
 
-4. Open your browser and navigate to the local address displayed in your terminal (typically `http://localhost:5173/`).
-
----
-
-## 🔐 Credentials & Demo Testing
-
-### Admin Access
-
-To access the protected management features, use the default administrator credentials inside the app or when making authenticated API requests:
-
-* **Username:** `admin`
-* **Password:** `aawaazkar`
-
-### Testing Status Changes via cURL
-
-If you want to manually execute a status mutation bypass test on a report via your terminal, send the `access_token` inside the authorization header:
-
-```bash
-curl -X PATCH http://localhost:3000/api/reports/1/status \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE" \
-  -d '{"status":"Resolved"}'
-
-```
-
----
-
+## Author
+**Mustafa Muhammad Iqbal** — [GitHub](https://github.com/Mustafa-Hazard) · [LinkedIn](https://linkedin.com/in/mustafa642)
